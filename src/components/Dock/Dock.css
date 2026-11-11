@@ -1,0 +1,302 @@
+/* ---------- Dock bar ---------- */
+
+.dock {
+  /* No transform / z-index here: the glass layers use mix-blend-mode and
+     must blend with the wallpaper, so the dock must not isolate itself. */
+  position: relative;
+  display: inline-flex;
+  border-radius: 22px;
+}
+
+.dock__glass {
+  position: absolute;
+  inset: 0;
+  border-radius: 22px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.dock__glass > div {
+  position: absolute;
+}
+
+.dock__glass-dodge {
+  inset: 0;
+  background: rgba(86, 86, 86, 0.6);
+  mix-blend-mode: color-dodge;
+}
+
+.dock__glass-tint {
+  inset: 0;
+  background: rgba(211, 211, 211, 0.2);
+}
+
+.dock__glass-darker {
+  left: 10px;
+  right: -18px;
+  top: 26px;
+  height: 42px;
+  border-radius: 22px;
+  background: #7e7e7e;
+  filter: blur(17.5px);
+  mix-blend-mode: color-burn;
+}
+
+.dock__glass-edge {
+  width: 143px;
+  height: 54px;
+  filter: blur(0.5px);
+}
+
+.dock__glass-edge--lt {
+  left: -1px;
+  top: 0;
+  border-left: 1px solid #fff;
+  border-top: 1px solid #fff;
+  border-top-left-radius: 22px;
+}
+
+.dock__glass-edge--rb {
+  right: 0;
+  bottom: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0);
+  border-bottom: 1px solid rgba(255, 255, 255, 0);
+  border-bottom-right-radius: 22px;
+}
+
+.dock__row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 20px 0 8px;
+}
+
+/* ---------- Items ---------- */
+
+.dock-item {
+  position: relative;
+  flex: none;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.dock-item:focus-visible {
+  outline: none;
+}
+
+.dock-item:focus-visible .dock-item__icon {
+  outline: 2px solid rgba(255, 255, 255, 0.9);
+  outline-offset: 3px;
+  border-radius: 14px;
+}
+
+/* The icon keeps its design size and is scaled from its bottom edge,
+   centred horizontally in the (growing) slot. */
+.dock-item__icon {
+  position: absolute;
+  left: 50%;
+  translate: -50% 0;
+  display: block;
+  will-change: transform;
+}
+
+.dock-item__icon > img {
+  display: block;
+}
+
+/* Rounded app tile (patient app, records, messages) */
+.app-tile {
+  position: relative;
+  display: block;
+  width: 54px;
+  height: 54px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.app-tile > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dock-badge {
+  position: absolute;
+  top: -6px;
+  right: -5px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 4px 5px 3px;
+  border: 0.844px solid rgba(0, 0, 0, 0.5);
+  border-radius: 9999px;
+  background: linear-gradient(to bottom, #ee7575, #f24141 57.143%);
+  filter: drop-shadow(0 0.844px 0 rgba(0, 0, 0, 0.25));
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.12px;
+  white-space: nowrap;
+}
+
+.dock-separator {
+  flex: none;
+  display: block;
+}
+
+/* ---------- App folder (2x2 grid with stacked cards behind) ---------- */
+
+.app-folder {
+  position: relative;
+  display: block;
+  width: 61px;
+  height: 62px;
+}
+
+/* Figma uses plus-lighter blend layers here. The magnify transform puts each
+   icon in its own compositing group, so those can't blend with the wallpaper;
+   they are approximated with equivalent light overlays instead. */
+.app-folder__card {
+  position: absolute;
+  border-radius: 12px;
+}
+
+.app-folder__card--back {
+  left: -9px;
+  top: 6px;
+  width: 60px;
+  height: 51px;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)),
+    rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(40px);
+}
+
+.app-folder__card--mid {
+  left: -4px;
+  top: 3px;
+  width: 52px;
+  height: 56px;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.04)),
+    rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(15px);
+  box-shadow: -1px 0 0 rgba(0, 0, 0, 0.09);
+}
+
+.app-folder__front {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 22px 22px;
+  gap: 4px;
+  padding: 7px 7px 7px 6px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow:
+    inset 0.5px 0 0 rgba(0, 0, 0, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.08),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.11);
+}
+.app-folder__front-frost {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.45)),
+    rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(15px);
+}
+
+.mini-icon {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  border-radius: 5.25px;
+  overflow: hidden;
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+}
+.mini-icon > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+}
+.mini-icon {
+  isolation: isolate;
+}
+
+/* ---------- Person avatars ---------- */
+
+.person {
+  position: relative;
+  display: block;
+  width: 44px;
+  height: 44px;
+}
+.person > img {
+  display: block;
+  width: 44px;
+  height: 44px;
+}
+.person .dock-badge {
+  top: -5px;
+  right: -7px;
+  padding: 3px 5px;
+  letter-spacing: 0.006px;
+}
+
+/* ---------- Tooltip ---------- */
+
+.dock-tooltip__anchor {
+  position: absolute;
+  left: -200px;
+  right: -200px;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.dock-tooltip {
+  position: relative;
+  display: block;
+  max-width: 384px;
+  padding: 5px 8px 6px;
+  border-radius: 8px;
+  background: #202020;
+  color: #f4faff;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 19px;
+  letter-spacing: 0.195px;
+  white-space: nowrap;
+  transform-origin: 50% 100%;
+}
+
+.dock-tooltip__arrow {
+  position: absolute;
+  left: 50%;
+  bottom: -4px;
+  width: 10px;
+  height: 10px;
+  translate: -50% 0;
+  rotate: -45deg;
+}

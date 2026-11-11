@@ -1,0 +1,18 @@
+/* Desktop with the wallpaper from the design. No transform / z-index on
+   these containers so the dock's blend modes reach the wallpaper. */
+.desktop {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #898686 url('./assets/dock/wallpaper.png') center / cover no-repeat;
+}
+
+.desktop__dock {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 10px;
+  display: flex;
+  justify-content: center;
+}
