@@ -48,8 +48,8 @@ type DockProps = {
 
 export function Dock({
   children,
-  magnification = 1.5,
-  distance = 140,
+  magnification = 1.45,
+  distance = 110,
   spring = { mass: 0.1, stiffness: 170, damping: 12 },
   className,
 }: DockProps) {
@@ -104,9 +104,9 @@ export function DockItem({ label, width, height, children, onClick, style }: Doc
   const targetScale = useTransform(offset, [-distance, 0, distance], [1, magnification, 1])
   const scale = useSpring(targetScale, spring)
 
-  // The slot widens with the icon so neighbours get pushed aside,
-  // while the icon itself grows upward out of the bar.
-  const slotWidth = useTransform(scale, (s) => width * s)
+  // The slot keeps its resting width so the dock never changes size;
+  // the icon grows upward out of the bar and the larger icon draws on top.
+  const zIndex = useTransform(scale, (s) => Math.round(s * 100))
   const restingBottom = (DOCK_HEIGHT - height) / 2
   const tooltipBottom = useTransform(scale, (s) => restingBottom + height * s + 10)
 
@@ -115,7 +115,7 @@ export function DockItem({ label, width, height, children, onClick, style }: Doc
       ref={ref}
       type="button"
       className="dock-item"
-      style={{ width: slotWidth, height: DOCK_HEIGHT, ...style }}
+      style={{ width, height: DOCK_HEIGHT, zIndex, ...style }}
       aria-label={label}
       onClick={onClick}
       onMouseEnter={() => setHovered(true)}
