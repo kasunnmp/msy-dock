@@ -2,7 +2,7 @@
 
 A macOS-style magnifying dock with tooltips, built from the Maisey Patient Records Figma design.
 
-- Icons magnify with a spring as the cursor approaches and push their neighbours aside.
+- The hovered icon rises a few px on a spring and settles back on leave; the dock never resizes.
 - A tooltip with the item's name appears above the hovered (or keyboard-focused) icon.
 
 ## Run
@@ -14,7 +14,7 @@ npm run dev
 
 ## Structure
 
-- `src/components/Dock/Dock.tsx` – reusable `Dock`, `DockItem`, `DockBadge`, `DockSeparator` (tune `magnification`, `distance`, `spring`).
+- `src/components/Dock/Dock.tsx` – reusable `Dock`, `DockItem`, `DockBadge`, `DockSeparator` (tune `lift` and `spring`).
 - `src/components/Dock/AskMaisey.tsx` – the "Ask Maisey" pill (static, not magnified).
 - `src/App.tsx` – dock contents and labels.
 - `src/assets/dock/` – assets exported from Figma.

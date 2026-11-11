@@ -1,20 +1,5 @@
-import {
-  createContext,
-  useContext,
-  useRef,
-  useState,
-  type CSSProperties,
-  type ReactNode,
-} from 'react'
-import {
-  AnimatePresence,
-  motion,
-  useMotionValue,
-  useSpring,
-  useTransform,
-  type MotionValue,
-  type SpringOptions,
-} from 'motion/react'
+import { createContext, useContext, useState, type CSSProperties, type ReactNode } from 'react'
+import { AnimatePresence, motion, type Transition } from 'motion/react'
 import arrowSvg from '../../assets/dock/tooltip-arrow.svg'
 import './Dock.css'
 
@@ -22,10 +7,8 @@ import './Dock.css'
 export const DOCK_HEIGHT = 74
 
 type DockConfig = {
-  mouseX: MotionValue<number>
-  magnification: number
-  distance: number
-  spring: SpringOptions
+  lift: number
+  spring: Transition
 }
 
 const DockContext = createContext<DockConfig | null>(null)
@@ -38,33 +21,22 @@ function useDock() {
 
 type DockProps = {
   children: ReactNode
-  /** Max scale of the icon directly under the cursor. */
-  magnification?: number
-  /** How far (px) from the cursor icons are still affected. */
-  distance?: number
-  spring?: SpringOptions
+  /** How far (px) the hovered icon rises. */
+  lift?: number
+  /** Spring used for the rise and the settle back down. */
+  spring?: Transition
   className?: string
 }
 
 export function Dock({
   children,
-  magnification = 1.45,
-  distance = 110,
-  spring = { mass: 0.1, stiffness: 170, damping: 12 },
+  lift = 8,
+  spring = { type: 'spring', stiffness: 420, damping: 18, mass: 0.6 },
   className,
 }: DockProps) {
-  // Infinity = cursor is not over the dock, so every icon rests at scale 1.
-  const mouseX = useMotionValue(Infinity)
-
   return (
-    <DockContext.Provider value={{ mouseX, magnification, distance, spring }}>
-      <nav
-        className={`dock ${className ?? ''}`}
-        style={{ height: DOCK_HEIGHT }}
-        onMouseMove={(e) => mouseX.set(e.clientX)}
-        onMouseLeave={() => mouseX.set(Infinity)}
-        aria-label="Dock"
-      >
+    <DockContext.Provider value={{ lift, spring }}>
+      <nav className={`dock ${className ?? ''}`} style={{ height: DOCK_HEIGHT }} aria-label="Dock">
         <div className="dock__glass" aria-hidden>
           <div className="dock__glass-dodge" />
           <div className="dock__glass-tint" />
@@ -81,7 +53,7 @@ export function Dock({
 type DockItemProps = {
   /** Tooltip text, also used as the accessible name. */
   label: string
-  /** Resting size of the icon in px (from the design). */
+  /** Size of the icon in px (from the design). */
   width: number
   height: number
   children: ReactNode
@@ -89,50 +61,40 @@ type DockItemProps = {
   style?: CSSProperties
 }
 
+/**
+ * Only the hovered icon reacts: it rises a few px on a spring and settles
+ * back when the cursor leaves. Neighbours and the dock never move or resize.
+ */
 export function DockItem({ label, width, height, children, onClick, style }: DockItemProps) {
-  const { mouseX, magnification, distance, spring } = useDock()
-  const ref = useRef<HTMLButtonElement>(null)
-  const [hovered, setHovered] = useState(false)
-
-  // Signed distance between the cursor and this icon's centre.
-  const offset = useTransform(mouseX, (x) => {
-    const rect = ref.current?.getBoundingClientRect()
-    if (!rect) return Infinity
-    return x - (rect.left + rect.width / 2)
-  })
-
-  const targetScale = useTransform(offset, [-distance, 0, distance], [1, magnification, 1])
-  const scale = useSpring(targetScale, spring)
-
-  // The slot keeps its resting width so the dock never changes size;
-  // the icon grows upward out of the bar and the larger icon draws on top.
-  const zIndex = useTransform(scale, (s) => Math.round(s * 100))
+  const { lift, spring } = useDock()
+  const [active, setActive] = useState(false)
   const restingBottom = (DOCK_HEIGHT - height) / 2
-  const tooltipBottom = useTransform(scale, (s) => restingBottom + height * s + 10)
 
   return (
-    <motion.button
-      ref={ref}
+    <button
       type="button"
       className="dock-item"
-      style={{ width, height: DOCK_HEIGHT, zIndex, ...style }}
+      style={{ width, height: DOCK_HEIGHT, ...style }}
       aria-label={label}
       onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onFocus={() => setHovered(true)}
-      onBlur={() => setHovered(false)}
+      onMouseEnter={() => setActive(true)}
+      onMouseLeave={() => setActive(false)}
+      onFocus={() => setActive(true)}
+      onBlur={() => setActive(false)}
     >
       <motion.span
         className="dock-item__icon"
-        style={{ width, height, bottom: restingBottom, scale, originY: 1 }}
+        style={{ width, height, bottom: restingBottom }}
+        animate={{ y: active ? -lift : 0 }}
+        whileTap={{ scale: 0.94 }}
+        transition={spring}
       >
         {children}
       </motion.span>
 
-      <motion.span className="dock-tooltip__anchor" style={{ bottom: tooltipBottom }}>
-        <AnimatePresence>
-          {hovered && (
+      <AnimatePresence>
+        {active && (
+          <motion.span className="dock-tooltip__anchor" style={{ bottom: restingBottom + height + lift + 10 }}>
             <motion.span
               className="dock-tooltip"
               role="tooltip"
@@ -144,10 +106,10 @@ export function DockItem({ label, width, height, children, onClick, style }: Doc
               {label}
               <img className="dock-tooltip__arrow" src={arrowSvg} alt="" width={10} height={10} />
             </motion.span>
-          )}
-        </AnimatePresence>
-      </motion.span>
-    </motion.button>
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </button>
   )
 }
 
