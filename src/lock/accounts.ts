@@ -40,4 +40,17 @@ export const MULTI_USERS: Account[] = [
   { id: 'benjamin', name: 'Benjamin', avatar: [avatarPhotoBg, avatarBenjamin], org: origin },
   { id: 'liam', name: 'Liam', avatar: [avatarPhotoBg], org: meditrust },
   { id: 'liam-2', name: 'Liam', avatar: [avatarLiam2], org: meditrust },
+  // Extra demo accounts so account selection spans several pages.
+  { id: 'sofia', name: 'Sofia', avatar: [avatarEthan], org: revox },
+  { id: 'noah', name: 'Noah', avatar: [avatarLiam2], org: origin },
+  { id: 'amara', name: 'Amara', avatar: [avatarDaniel], org: meditrust },
+  { id: 'lucas', name: 'Lucas', avatar: [avatarPhotoBg], org: revox },
+  { id: 'priya', name: 'Priya', avatar: [avatarHayden], org: meditrust },
+  { id: 'mateo', name: 'Mateo', avatar: [avatarEthan], org: origin },
+  { id: 'chloe', name: 'Chloe', avatar: [avatarLiam2], org: meditrust },
+  { id: 'omar', name: 'Omar', avatar: [avatarDaniel], org: origin },
+  { id: 'isla', name: 'Isla', avatar: [avatarPhotoBg], org: meditrust },
+  { id: 'ravi', name: 'Ravi', avatar: [avatarHayden], org: revox },
+  { id: 'zara', name: 'Zara', avatar: [avatarEthan], org: meditrust },
+  { id: 'felix', name: 'Felix', avatar: [avatarDaniel], org: revox },
 ]

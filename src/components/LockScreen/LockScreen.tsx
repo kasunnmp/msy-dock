@@ -5,8 +5,8 @@ import { ACCOUNT_SELECTION_TIMEOUT_MS } from '../../lock/config'
 import lockWallpaper from '../../assets/lock/lock-wallpaper-lowres.jpg'
 import arrowBackSvg from '../../assets/lock/arrow-back.svg'
 import addSvg from '../../assets/lock/add.svg'
-import paginationSvg from '../../assets/lock/pagination.svg'
 import { AccountTile } from './AccountTile'
+import { AccountPager } from './AccountPager'
 import { LockClock } from './LockClock'
 import { LockFooter } from './LockFooter'
 import { PasskeyPrompt } from './PasskeyPrompt'
@@ -154,12 +154,12 @@ export function LockScreen({
               transition={{ duration: 0.22, ease }}
             >
               <div className="lock__select">
-              <div className="lock__grid" role="group" aria-label="Choose an account">
-                {accounts.map((a) => (
-                  <AccountTile key={a.id} account={a} active={a.id === current.id} onSelect={setPasskeyFor} />
-                ))}
-              </div>
-              <img className="lock__pagination" src={paginationSvg} alt="" width={26} height={8} />
+              <AccountPager
+                accounts={accounts}
+                currentId={current.id}
+                onSelect={setPasskeyFor}
+                paused={!!passkeyFor}
+              />
               <div className="lock__select-actions">
                 <button
                   type="button"

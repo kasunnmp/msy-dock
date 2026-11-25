@@ -28,7 +28,7 @@ A small **Prototype** panel (top-left, not part of the design) switches between 
   `convert wallpaper.jpg -resize 48x -blur 0x2 -quality 70 lock-wallpaper-lowres.jpg`
 - Clock: time is the most prominent element, with the date above it. The year is never shown.
 - Clicking the current profile opens the passkey prompt. It never opens automatically.
-- Multiple users: only the locked user is shown, plus **Switch account**. Account selection shows all profiles with an **Active** badge on the locked one. **Back** (or Esc) returns, and the screen returns on its own after 15 s without interaction (`ACCOUNT_SELECTION_TIMEOUT_MS`).
+- Multiple users: only the locked user is shown, plus **Switch account**. Account selection shows all profiles, 8 per page (4×2), with an **Active** badge on the locked one. It opens on the page holding the locked user. Change pages with the dots, ← / →, a horizontal swipe/drag, or horizontal trackpad scroll. The demo has 20 accounts (3 pages). **Back** (or Esc) returns, and the screen returns on its own after 15 s without interaction (`ACCOUNT_SELECTION_TIMEOUT_MS`).
 - Footer: language dropdown (placeholder, still pending), legal text (placeholder), and Trouble unlocking / Terms / Privacy links (placeholder MediTrust URLs in `src/lock/config.ts`).
 
 **Simulated in the prototype**
