@@ -53,7 +53,7 @@ export function Workspace({ children, openApps, onToggleApp, inactive }: Workspa
   })
 
   return (
-    <main className="desktop" inert={inactive}>
+    <main className={inactive ? 'desktop desktop--inactive' : 'desktop'} inert={inactive}>
       {children}
       <div className="desktop__dock">
         <Dock>

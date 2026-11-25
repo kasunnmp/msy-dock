@@ -6,6 +6,23 @@
   height: 100vh;
   overflow: hidden;
   background: #898686 url('./assets/wallpaper.jpg') center / cover no-repeat;
+  transition:
+    filter 320ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 320ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Behind the session screen: the desktop itself is blurred (a real filter rather than the
+   overlay's backdrop-filter, which some browsers skip). Scaled up so the blur's soft edges
+   stay off-screen. */
+.desktop--inactive {
+  filter: blur(60px) saturate(1.15) brightness(1.06);
+  transform: scale(1.15);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .desktop {
+    transition: none;
+  }
 }
 
 .desktop__dock {

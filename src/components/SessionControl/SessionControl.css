@@ -5,11 +5,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Desktop stays visible behind, blurred. Figma's colour-dodge layer can't blend through
-     a backdrop-filter, so its lift is approximated with brightness instead. */
-  background: linear-gradient(to bottom, rgba(245, 245, 245, 0.2), rgba(232, 232, 232, 0.2));
-  backdrop-filter: blur(55px) brightness(1.08) saturate(1.1);
-  -webkit-backdrop-filter: blur(55px) brightness(1.08) saturate(1.1);
+  /* Light wash from Figma's "Blur" layer. The blur itself is applied to the desktop
+     (.desktop--inactive) so it renders in every browser. */
+  background: linear-gradient(to bottom, rgba(245, 245, 245, 0.28), rgba(232, 232, 232, 0.28));
 }
 
 .session__row {
