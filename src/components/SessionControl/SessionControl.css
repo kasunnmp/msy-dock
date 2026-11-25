@@ -33,12 +33,23 @@
   color: rgba(0, 0, 0, 0.7);
   white-space: nowrap;
   cursor: pointer;
-  transition: background-color 140ms ease;
 }
 
-.session__btn:hover,
-.session__btn:focus-visible {
-  background: rgba(0, 0, 0, 0.08);
+/* Hover / focus darken only the round icon, not the whole button. */
+.session__btn:hover .session__circle {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.session__btn:hover .session__circle--strong {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.session__btn:active .session__circle {
+  transform: scale(0.96);
+}
+
+.session__btn:focus-visible .session__circle {
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.55);
 }
 
 .session__circle {
@@ -49,6 +60,9 @@
   height: 84px;
   border-radius: 888px;
   background: rgba(0, 0, 0, 0.2);
+  transition:
+    background-color 140ms ease,
+    transform 120ms ease;
 }
 
 .session__circle--strong {
