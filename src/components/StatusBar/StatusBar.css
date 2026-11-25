@@ -24,6 +24,8 @@
 
 .status-bar__items {
   position: relative;
+  /* Keeps white text/icons legible on light wallpapers. */
+  filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.35));
   display: flex;
   align-items: center;
   height: 100%;
