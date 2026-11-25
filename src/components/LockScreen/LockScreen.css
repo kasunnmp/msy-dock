@@ -1,0 +1,581 @@
+/* ---------- Lock root ---------- */
+
+.lock {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  overflow: hidden;
+  background: #9fb4d9;
+  color: rgba(0, 0, 0, 0.9);
+  outline: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* The source image is ~48px wide and already blurred server-side ("backend" step).
+   The extra CSS blur only smooths upscaling; removing it reveals nothing. */
+.lock__wallpaper {
+  position: absolute;
+  inset: -60px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(40px) saturate(1.05);
+  pointer-events: none;
+}
+
+/* Figma "Fog": colour-dodge #262626 + light gradient wash. */
+.lock__fog {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(245, 245, 245, 0.2), rgba(232, 232, 232, 0.2));
+}
+
+.lock__fog::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #262626;
+  mix-blend-mode: color-dodge;
+}
+
+/* ---------- Clock ---------- */
+
+.lock__clock {
+  position: absolute;
+  top: 64px;
+  left: 50%;
+  width: 444px;
+  margin-left: -222px;
+}
+
+.lock-clock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 23px;
+  text-align: center;
+}
+
+.lock-clock p {
+  margin: 0;
+  width: 100%;
+}
+
+.lock-clock__date {
+  font-family: 'PP Neue Montreal', Inter, ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 24px;
+  letter-spacing: 0.14px;
+  color: #000;
+}
+
+.lock-clock__time {
+  font-family: 'PP Neue Montreal', Inter, ui-sans-serif, system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 140px;
+  line-height: 100px;
+  height: 100px;
+  letter-spacing: -0.7px;
+  font-feature-settings: 'ss02' 1, 'tnum' 1;
+  text-box: trim-both cap alphabetic;
+  background-image: linear-gradient(99.6deg, #000 1.8%, rgba(0, 0, 0, 0.6) 91.6%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---------- Default state ---------- */
+
+.lock__default,
+.lock__select-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.lock__default > *,
+.lock__select-layer > * {
+  pointer-events: auto;
+}
+
+.lock__current {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.lock__actions {
+  position: absolute;
+  left: 50%;
+  bottom: 104px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ---------- Account-selection state ---------- */
+
+.lock__select {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 91px);
+  width: 618px;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.lock__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 150px);
+  gap: 6px;
+}
+
+.lock__pagination {
+  display: block;
+  margin-top: 10px;
+}
+
+.lock__select-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  padding-left: 6px;
+}
+
+/* ---------- Account tile (Figma "Account") ---------- */
+
+.account {
+  all: unset;
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: 150px;
+  min-width: 140px;
+  height: 168px;
+  padding-bottom: 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+
+.account:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.account:focus-visible {
+  background: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.55);
+}
+
+.account:active {
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.avatar {
+  position: relative;
+  display: block;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: #e6e6e6;
+  pointer-events: none;
+}
+
+.avatar img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+.avatar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.14);
+}
+
+.account__avatar {
+  flex: none;
+  width: 84px;
+  height: 84px;
+}
+
+.account__org-logo {
+  position: absolute;
+  left: 92px;
+  top: 72px;
+  width: 32px;
+  height: 32px;
+}
+
+.account__text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  font-size: 15px;
+  line-height: 1;
+  text-align: center;
+  text-shadow: 0 0 19px rgba(0, 0, 0, 0.25);
+}
+
+.account__name {
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.9);
+}
+
+.account__org {
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.account__badge {
+  position: absolute;
+  top: 8px;
+  left: calc(50% + 0.5px);
+  transform: translateX(-50%);
+  padding: 2px 8px;
+  border-radius: 99px;
+  background: #fff;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 1px 0 rgba(0, 0, 0, 0.05),
+    0 0 0 1px rgba(0, 0, 0, 0.08);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  letter-spacing: 0.18px;
+  color: #202020;
+  white-space: nowrap;
+}
+
+/* ---------- Buttons ---------- */
+
+.pill,
+.icon-pill {
+  all: unset;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: 42px;
+  padding: 14px 16px;
+  border-radius: 99px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.07px;
+  color: rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 140ms ease;
+}
+
+.pill:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.pill--tertiary,
+.icon-pill {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.pill--tertiary:hover,
+.icon-pill:hover {
+  background: rgba(0, 0, 0, 0.16);
+}
+
+.pill:focus-visible,
+.icon-pill:focus-visible {
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.55);
+}
+
+.icon-pill {
+  width: 42px;
+  padding: 14px 15px;
+}
+
+/* Figma icon slot: 12×14 box holding a 24px glyph. */
+.icon-pill__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 14px;
+}
+
+.icon-pill__icon img {
+  flex: none;
+}
+
+.lock__hint {
+  position: absolute;
+  left: 50%;
+  bottom: 84px;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 8px 14px;
+  border-radius: 99px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* ---------- Footer ---------- */
+
+.lock-footer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 30px 26px;
+}
+
+.lock-footer__btn {
+  all: unset;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.07px;
+  color: rgba(0, 0, 0, 0.6);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 140ms ease, color 140ms ease;
+}
+
+.lock-footer__btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.lock-footer__btn:focus-visible {
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.55);
+}
+
+.lock-footer__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 10px;
+  height: 14px;
+}
+
+.lock-footer__icon img {
+  flex: none;
+}
+
+.lock-footer__legal {
+  position: absolute;
+  left: calc(50% + 0.5px);
+  transform: translateX(-50%);
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+  letter-spacing: 0.07px;
+  color: rgba(0, 0, 0, 0.6);
+  white-space: nowrap;
+}
+
+.lock-footer__links {
+  display: flex;
+  align-items: center;
+}
+
+.lock-footer__lang {
+  position: relative;
+}
+
+.lock-footer__menu {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  min-width: 220px;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.12),
+    0 0 0 1px rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(12px);
+}
+
+.lock-footer__menu button {
+  all: unset;
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.8);
+  cursor: pointer;
+}
+
+.lock-footer__menu button:hover,
+.lock-footer__menu button:focus-visible {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.lock-footer__menu [aria-selected='true'] button {
+  font-weight: 600;
+}
+
+/* ---------- Simulated passkey sheet ---------- */
+
+.passkey {
+  position: absolute;
+  top: 32px;
+  left: 50%;
+  width: 526px;
+  margin-left: -263px;
+  padding: 22px 24px 20px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.18),
+    0 0 0 1px rgba(0, 0, 0, 0.06);
+  color: #1f1f1f;
+  user-select: none;
+}
+
+.passkey p,
+.passkey h2 {
+  margin: 0;
+}
+
+.passkey__source {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #5f6368;
+}
+
+.passkey__title {
+  margin-top: 16px !important;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.passkey__sub {
+  margin-top: 8px !important;
+  font-size: 13px;
+  color: #5f6368;
+}
+
+.passkey__account {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 22px;
+  color: #3c4043;
+}
+
+.passkey__handle {
+  font-size: 14px;
+}
+
+.passkey__kind {
+  font-size: 12px;
+  color: #5f6368;
+}
+
+.passkey__sensor {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin: 22px auto 0;
+  padding: 10px 18px;
+  border-radius: 12px;
+  color: #e08a8a;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.passkey__sensor span {
+  color: #5f6368;
+}
+
+.passkey__sensor:hover,
+.passkey__sensor:focus-visible {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.passkey__sensor[data-verifying] {
+  color: #3b82f6;
+  cursor: default;
+}
+
+.passkey__sensor[data-verifying] svg {
+  animation: passkey-pulse 650ms ease-in-out infinite alternate;
+}
+
+@keyframes passkey-pulse {
+  to {
+    opacity: 0.35;
+  }
+}
+
+.passkey__actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 18px;
+}
+
+.passkey__btn {
+  all: unset;
+  padding: 9px 16px;
+  border-radius: 99px;
+  border: 1px solid #c4c7c5;
+  color: #0b57d0;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.passkey__btn:hover:not(:disabled) {
+  background: rgba(11, 87, 208, 0.06);
+}
+
+.passkey__btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .passkey__sensor[data-verifying] svg {
+    animation: none;
+  }
+}

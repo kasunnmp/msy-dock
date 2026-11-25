@@ -1,0 +1,106 @@
+.status-bar {
+  position: absolute;
+  top: 0;
+  left: 2px;
+  right: 2px;
+  height: 57px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 10px;
+  pointer-events: none;
+}
+
+.status-bar__glow {
+  position: absolute;
+  left: 70.68%;
+  top: 0.07%;
+  width: 29.35%;
+  height: 95.32%;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.status-bar__items {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  pointer-events: auto;
+}
+
+.status-bar__date {
+  padding: 8px 6px 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  white-space: pre;
+}
+
+.status-bar__icon {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 140ms ease;
+}
+
+.status-bar__icon--settings {
+  padding: 3px;
+  margin: 0 4px 0 6px;
+}
+
+.status-bar__icon--power {
+  padding: 5px;
+  margin: 0 6px 0 4px;
+}
+
+.status-bar__icon:hover,
+.status-bar__icon:focus-visible {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.status-bar__pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 65px;
+  margin: 0 8px 0 2px;
+  padding: 4px;
+  border-radius: 99px;
+}
+
+.status-bar__pill--hub {
+  width: 94px;
+  margin: 0 2px;
+  padding: 4px 2px 4px 4px;
+}
+
+.status-bar__count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 23px;
+  padding: 5px;
+  border-radius: 99px;
+  background: rgba(0, 0, 0, 0.4);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.065px;
+  color: #fff;
+}
+
+.status-bar__pill--hub .status-bar__count {
+  padding: 5px 7px;
+}
+
+.status-bar__pill-icon {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+}

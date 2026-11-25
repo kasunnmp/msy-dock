@@ -1,18 +1,79 @@
-/* Desktop with the wallpaper from the design. No transform / z-index on
-   these containers so the dock's blend modes reach the wallpaper. */
-.desktop {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  background: #898686 url('./assets/dock/wallpaper.png') center / cover no-repeat;
+.workspace-layer {
+  position: fixed;
+  inset: 0;
 }
 
-.desktop__dock {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 10px;
+/* ---------- Prototype controls (not part of the design) ---------- */
+
+.proto {
+  position: fixed;
+  left: 14px;
+  top: 14px;
+  z-index: 40;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  width: 300px;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.06);
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.75);
+}
+
+.proto__title {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.proto__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.proto__seg {
+  display: flex;
+  padding: 2px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.proto__seg button,
+.proto__lock {
+  all: unset;
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.proto__seg button[aria-pressed='true'] {
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  font-weight: 600;
+}
+
+.proto__lock {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  font-weight: 600;
+}
+
+.proto__lock kbd {
+  font-family: inherit;
+  font-weight: 400;
+  opacity: 0.7;
 }
