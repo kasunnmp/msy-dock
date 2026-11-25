@@ -36,9 +36,24 @@ function MiniIcon({ srcs }: { srcs: string[] }) {
   )
 }
 
-export function Workspace({ children }: { children?: ReactNode }) {
+type WorkspaceProps = {
+  children?: ReactNode
+  /** Apps open in this user's session (shown with a running dot). */
+  openApps: string[]
+  onToggleApp: (app: string) => void
+  /** Desktop is visible but not interactive (e.g. behind the session screen). */
+  inactive?: boolean
+}
+
+export function Workspace({ children, openApps, onToggleApp, inactive }: WorkspaceProps) {
+  const app = (label: string) => ({
+    label,
+    running: openApps.includes(label),
+    onClick: () => onToggleApp(label),
+  })
+
   return (
-    <main className="desktop">
+    <main className="desktop" inert={inactive}>
       {children}
       <div className="desktop__dock">
         <Dock>
@@ -48,24 +63,24 @@ export function Workspace({ children }: { children?: ReactNode }) {
             <img src={searchSvg} alt="" width={44} height={55} />
           </DockItem>
 
-          <DockItem label="Patient app" width={54} height={54}>
+          <DockItem {...app('Patient app')} width={54} height={54}>
             <AppTile src={patientAppPng} />
           </DockItem>
 
-          <DockItem label="Records" width={54} height={54}>
+          <DockItem {...app('Records')} width={54} height={54}>
             <AppTile src={cardsAppPng} />
           </DockItem>
 
-          <DockItem label="Messages" width={54} height={54}>
+          <DockItem {...app('Messages')} width={54} height={54}>
             <AppTile src={messagesPng} />
             <DockBadge count={5} />
           </DockItem>
 
-          <DockItem label="Files" width={54} height={52}>
+          <DockItem {...app('Files')} width={54} height={52}>
             <img src={filesSvg} alt="" width={54} height={52} />
           </DockItem>
 
-          <DockItem label="Apps" width={61} height={62} style={{ marginLeft: 8 }}>
+          <DockItem {...app('Apps')} width={61} height={62} style={{ marginLeft: 8 }}>
             <span className="app-folder">
               <span className="app-folder__card app-folder__card--back" />
               <span className="app-folder__card app-folder__card--mid" />

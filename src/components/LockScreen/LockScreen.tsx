@@ -14,7 +14,10 @@ import './LockScreen.css'
 
 type Props = {
   accounts: Account[]
+  /** The account shown on the default screen (locked user, or the last user after log out). */
   currentId: string
+  /** False after log out: no live session, so this is a sign-in screen and no "Active" badge. */
+  hasSession?: boolean
   /** Called after successful passkey auth with the account that unlocked. */
   onUnlock: (account: Account) => void
   selectionTimeoutMs?: number
@@ -35,6 +38,7 @@ const ease = [0.23, 1, 0.32, 1] as const
 export function LockScreen({
   accounts,
   currentId,
+  hasSession = true,
   onUnlock,
   selectionTimeoutMs = ACCOUNT_SELECTION_TIMEOUT_MS,
   initialMode = 'default',
@@ -90,7 +94,7 @@ export function LockScreen({
         className="lock"
         role="dialog"
         aria-modal="true"
-        aria-label={`Maisey OS is locked. Signed in as ${current.name}`}
+        aria-label={hasSession ? `Maisey OS is locked. Signed in as ${current.name}` : 'Sign in to Maisey OS'}
         tabIndex={-1}
         onContextMenu={(e) => e.preventDefault()}
         initial={{ opacity: 0 }}
@@ -125,7 +129,7 @@ export function LockScreen({
                 <AccountTile
                   account={current}
                   onSelect={setPasskeyFor}
-                  label={`Unlock as ${current.name} with passkey`}
+                  label={`${hasSession ? 'Unlock' : 'Sign in'} as ${current.name} with passkey`}
                 />
               </div>
 
@@ -157,6 +161,7 @@ export function LockScreen({
               <AccountPager
                 accounts={accounts}
                 currentId={current.id}
+                activeId={hasSession ? current.id : null}
                 onSelect={setPasskeyFor}
                 paused={!!passkeyFor}
               />

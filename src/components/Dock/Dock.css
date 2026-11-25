@@ -106,6 +106,18 @@
   will-change: transform;
 }
 
+/* Running-app indicator (Figma "Unlocked Desktop": small dot under the open app). */
+.dock-item__running {
+  position: absolute;
+  left: 50%;
+  bottom: 1px;
+  width: 4px;
+  height: 4px;
+  margin-left: -2px;
+  border-radius: 50%;
+  background: #e2582a;
+}
+
 .dock-item__icon > img {
   display: block;
 }

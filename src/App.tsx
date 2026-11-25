@@ -11,32 +11,80 @@ import './App.css'
 
 type Scenario = 'single' | 'multi'
 
+/** One user's workspace. Kept per user so switching users never mixes sessions. */
+type Session = { openApps: string[]; settingsOpen: boolean }
+
+const NEW_SESSION: Session = { openApps: [], settingsOpen: false }
+const DEFAULT_USER: Record<Scenario, string> = { single: 'daniel', multi: 'hayden' }
+// Figma "Unlocked Desktop" shows one app running; start the demo user with it open.
+const initialSessions = (s: Scenario): Record<string, Session> => ({
+  [DEFAULT_USER[s]]: { openApps: ['Records'], settingsOpen: false },
+})
+
 const ease = [0.23, 1, 0.32, 1] as const
 
 export default function App() {
   const [scenario, setScenario] = useState<Scenario>('multi')
   const accounts = scenario === 'single' ? SINGLE_USER : MULTI_USERS
-  const [currentId, setCurrentId] = useState('hayden')
+  // Live sessions by user id. Lock / switch keep them; only Log out removes one.
+  // Everything here sits above the lock boundary, so it survives the workspace unmounting.
+  const [sessions, setSessions] = useState(() => initialSessions('multi'))
+  /** User whose session is in the foreground; null after Log out (sign-in screen). */
+  const [activeId, setActiveId] = useState<string | null>(DEFAULT_USER.multi)
+  /** Shown on the sign-in screen after Log out. */
+  const [lastId, setLastId] = useState(DEFAULT_USER.multi)
   const [locked, setLocked] = useState<false | Mode>(false)
   const [sessionOpen, setSessionOpen] = useState(false)
-  // Workspace state that must survive a lock/unlock cycle lives here, above the lock boundary.
-  const [settingsOpen, setSettingsOpen] = useState(false)
   const [idleMs, setIdleMs] = useState<number | null>(DEFAULT_IDLE_TIMEOUT_MS)
   const [lockOnHidden, setLockOnHidden] = useState(DEFAULT_LOCK_ON_HIDDEN)
 
-  const effectiveCurrentId = accounts.some((a) => a.id === currentId) ? currentId : accounts[0].id
+  const shownId = activeId ?? lastId
+  const shownAccount = accounts.find((a) => a.id === shownId) ?? accounts[0]
+  const session = (activeId && sessions[activeId]) || NEW_SESSION
+  const updateSession = (patch: (s: Session) => Partial<Session>) => {
+    if (!activeId) return
+    setSessions((all) => {
+      const cur = all[activeId] ?? NEW_SESSION
+      return { ...all, [activeId]: { ...cur, ...patch(cur) } }
+    })
+  }
+  const toggleApp = (app: string) =>
+    updateSession((s) => ({
+      openApps: s.openApps.includes(app) ? s.openApps.filter((a) => a !== app) : [...s.openApps, app],
+    }))
+  const setSettingsOpen = (open: boolean | ((o: boolean) => boolean)) =>
+    updateSession((s) => ({ settingsOpen: typeof open === 'function' ? open(s.settingsOpen) : open }))
+
+  const changeScenario = (next: Scenario) => {
+    setScenario(next)
+    setSessions(initialSessions(next))
+    setActiveId(DEFAULT_USER[next])
+    setLastId(DEFAULT_USER[next])
+  }
 
   const lock = useCallback((mode: Mode = 'default') => {
     setSessionOpen(false)
     setLocked((l) => l || mode)
   }, [])
 
+  // Unlock / sign in. The same user gets their session back untouched; another user
+  // resumes their own background session, or starts a fresh one.
   const unlock = useCallback((account: Account) => {
-    // Switching to another profile: the detailed multi-account behaviour is defined
-    // separately; the prototype simply continues as that account.
-    setCurrentId(account.id)
+    setSessions((all) => (all[account.id] ? all : { ...all, [account.id]: NEW_SESSION }))
+    setActiveId(account.id)
+    setLastId(account.id)
     setLocked(false)
   }, [])
+
+  // Log out (after confirmation): end this user's session and go to the sign-in screen.
+  const logout = () => {
+    if (!activeId) return
+    setSessions(({ [activeId]: _ended, ...rest }) => rest)
+    setLastId(activeId)
+    setActiveId(null)
+    setSessionOpen(false)
+    setLocked(accounts.length > 1 ? 'select' : 'default')
+  }
 
   // 1. Automatic lock after inactivity (timeout comes from Advanced Settings).
   useEffect(() => {
@@ -88,35 +136,38 @@ export default function App() {
             exit={{ opacity: 0, filter: 'blur(24px)', scale: 0.985 }}
             transition={{ duration: 0.45, ease }}
           >
-            <Workspace>
+            {/* Behind the session screen the desktop stays visible (blurred by the overlay) but inert. */}
+            <Workspace openApps={session.openApps} onToggleApp={toggleApp} inactive={sessionOpen}>
               <AnimatePresence>
-                {settingsOpen && (
+                {session.settingsOpen && (
                   <SettingsTray
-                    account={accounts.find((x) => x.id === effectiveCurrentId) ?? accounts[0]}
+                    account={shownAccount}
                     idleMs={idleMs}
                     onIdleMsChange={setIdleMs}
                     lockOnHidden={lockOnHidden}
                     onLockOnHiddenChange={setLockOnHidden}
                     onClose={() => setSettingsOpen(false)}
+                    interactive={!sessionOpen}
                   />
                 )}
               </AnimatePresence>
               <StatusBar
-                settingsOpen={settingsOpen}
+                settingsOpen={session.settingsOpen}
                 onSettings={() => setSettingsOpen((o) => !o)}
                 onSessionControl={() => setSessionOpen(true)}
               />
-              <AnimatePresence>
-                {sessionOpen && (
-                  <SessionControl
-                    onLock={() => lock('default')}
-                    onSwitchUsers={() => lock('select')}
-                    onLogout={() => setSessionOpen(false)}
-                    onClose={() => setSessionOpen(false)}
-                  />
-                )}
-              </AnimatePresence>
             </Workspace>
+            <AnimatePresence>
+              {sessionOpen && (
+                <SessionControl
+                  userName={shownAccount.name}
+                  onLock={() => lock('default')}
+                  onSwitchUsers={() => lock('select')}
+                  onLogout={logout}
+                  onClose={() => setSessionOpen(false)}
+                />
+              )}
+            </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>
@@ -126,21 +177,22 @@ export default function App() {
           <LockScreen
             key="lock"
             accounts={accounts}
-            currentId={effectiveCurrentId}
+            currentId={shownAccount.id}
+            hasSession={activeId !== null}
             initialMode={locked}
             onUnlock={unlock}
           />
         )}
       </AnimatePresence>
 
-      {!locked && (
+      {!locked && !sessionOpen && (
         <aside className="proto" aria-label="Prototype controls">
           <p className="proto__title">Prototype</p>
           <div className="proto__row">
             <span>Users</span>
             <div className="proto__seg">
               {(['single', 'multi'] as const).map((s) => (
-                <button key={s} type="button" aria-pressed={scenario === s} onClick={() => setScenario(s)}>
+                <button key={s} type="button" aria-pressed={scenario === s} onClick={() => changeScenario(s)}>
                   {s === 'single' ? 'Single' : 'Multiple'}
                 </button>
               ))}

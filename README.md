@@ -18,6 +18,13 @@ A small **Prototype** panel (top-left, not part of the design) switches between 
 - Inactivity: auto-lock after the configured idle timeout (Advanced Settings in the product, the Prototype panel here).
 - Protected state: the session locks when the tab/window becomes hidden (`visibilitychange`). You can turn this off in the panel.
 
+**Session actions (status bar power button)**
+- Opens over the desktop. The workspace stays visible behind it, blurred and inert (`inert`, so it can't be clicked or tabbed into), and its state is untouched.
+- **Lock screen**: locks immediately with no confirmation. Open apps and Settings stay as they were. After sign-in the same session returns.
+- **Switch users**: opens account selection. The current user stays signed in in the background. Each user has a **separate session** (open dock apps and Settings state, kept in `sessions` in `App.tsx`). Switching back restores the earlier user's state, and a user signing in for the first time gets a fresh session.
+- **Log out**: destructive, so it asks for confirmation first (Cancel is focused, and Esc goes back). Confirming ends only that user's session and shows the sign-in screen, with no "Active" badge. Other users' background sessions are unaffected.
+- Try it: open a few dock apps (click them, and a dot shows they're running), switch to another user, then switch back.
+
 **Settings (Advanced → Lock screen)**
 - The status bar settings icon opens the Settings tray (Account, Appearance, MaiseyOS, Advanced). **Advanced** expands to the session-timeout controls: lock after inactivity (15 s / 1 min / 5 min / Never) and lock when the window is hidden.
 - The tray's open state survives a lock/unlock cycle, which shows session continuity.

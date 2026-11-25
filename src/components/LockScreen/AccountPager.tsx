@@ -8,7 +8,10 @@ export const ACCOUNTS_PER_PAGE = 8
 
 type Props = {
   accounts: Account[]
+  /** Account whose page opens first. */
   currentId: string
+  /** Account that gets the "Active" badge (null when nobody is signed in). */
+  activeId: string | null
   onSelect: (account: Account) => void
   /** Disable keyboard paging while something sits on top (e.g. the passkey sheet). */
   paused?: boolean
@@ -20,7 +23,7 @@ const ease = [0.23, 1, 0.32, 1] as const
  * Account-selection grid with page indicators. Change page with the dots,
  * ← / → keys, a horizontal swipe/drag, or a horizontal trackpad scroll.
  */
-export function AccountPager({ accounts, currentId, onSelect, paused }: Props) {
+export function AccountPager({ accounts, currentId, activeId, onSelect, paused }: Props) {
   const pageCount = Math.max(1, Math.ceil(accounts.length / ACCOUNTS_PER_PAGE))
   // Open on the page that holds the locked (active) account.
   const [[page, dir], setPage] = useState(() => {
@@ -93,7 +96,7 @@ export function AccountPager({ accounts, currentId, onSelect, paused }: Props) {
             onDragEnd={onDragEnd}
           >
             {visible.map((a) => (
-              <AccountTile key={a.id} account={a} active={a.id === currentId} onSelect={select} />
+              <AccountTile key={a.id} account={a} active={a.id === activeId} onSelect={select} />
             ))}
           </motion.div>
         </AnimatePresence>

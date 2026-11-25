@@ -16,6 +16,8 @@ type Props = {
   lockOnHidden: boolean
   onLockOnHiddenChange: (v: boolean) => void
   onClose: () => void
+  /** False while another layer (session screen) is on top, so Esc isn't handled here. */
+  interactive?: boolean
 }
 
 const ease = [0.23, 1, 0.32, 1] as const
@@ -28,14 +30,16 @@ export function SettingsTray({
   lockOnHidden,
   onLockOnHiddenChange,
   onClose,
+  interactive = true,
 }: Props) {
   const [advancedOpen, setAdvancedOpen] = useState(false)
 
   useEffect(() => {
+    if (!interactive) return
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [onClose])
+  }, [onClose, interactive])
 
   return (
     <motion.div

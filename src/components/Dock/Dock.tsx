@@ -166,6 +166,8 @@ type DockItemProps = {
   height: number
   children: ReactNode
   onClick?: () => void
+  /** Shows the running-app dot under the icon. */
+  running?: boolean
   style?: CSSProperties
 }
 
@@ -173,7 +175,7 @@ type DockItemProps = {
  * Only the hovered icon reacts: it rises a few px on a spring and settles
  * back when the cursor leaves. Neighbours and the dock never move or resize.
  */
-export function DockItem({ label, width, height, children, onClick, style }: DockItemProps) {
+export function DockItem({ label, width, height, children, onClick, running, style }: DockItemProps) {
   const { lift, spring, tooltip, showTooltip, hideTooltip } = useDock()
   const id = useId()
   const reduced = useReducedMotion() ?? false
@@ -187,7 +189,8 @@ export function DockItem({ label, width, height, children, onClick, style }: Doc
       type="button"
       className="dock-item"
       style={{ width, height: DOCK_HEIGHT, ...style }}
-      aria-label={label}
+      aria-label={running ? `${label} (open)` : label}
+      aria-pressed={onClick ? !!running : undefined}
       aria-describedby={open ? `${id}-tip` : undefined}
       onClick={onClick}
       onMouseEnter={() => {
@@ -218,6 +221,19 @@ export function DockItem({ label, width, height, children, onClick, style }: Doc
       >
         {children}
       </motion.span>
+
+      <AnimatePresence>
+        {running && (
+          <motion.span
+            className="dock-item__running"
+            aria-hidden
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0 }}
+            transition={{ duration: 0.18 }}
+          />
+        )}
+      </AnimatePresence>
 
       <span className="dock-tooltip__anchor" style={{ bottom: restingBottom + height + lift + 10 }}>
         <AnimatePresence custom={custom}>
