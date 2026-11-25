@@ -18,9 +18,11 @@ const fmt = new Intl.DateTimeFormat('en-GB', {
 
 type Props = {
   onSessionControl: () => void
+  onSettings: () => void
+  settingsOpen: boolean
 }
 
-export function StatusBar({ onSessionControl }: Props) {
+export function StatusBar({ onSessionControl, onSettings, settingsOpen }: Props) {
   const now = useNow()
   const parts = fmt.formatToParts(now)
   const get = (t: Intl.DateTimeFormatPartTypes) => parts.find((p) => p.type === t)?.value ?? ''
@@ -31,7 +33,13 @@ export function StatusBar({ onSessionControl }: Props) {
       <img className="status-bar__glow" src={glowPng} alt="" aria-hidden draggable={false} />
       <div className="status-bar__items">
         <span className="status-bar__date">{label}</span>
-        <button type="button" className="status-bar__icon status-bar__icon--settings" aria-label="Settings">
+        <button
+          type="button"
+          className="status-bar__icon status-bar__icon--settings"
+          aria-label="Settings"
+          aria-expanded={settingsOpen}
+          onClick={onSettings}
+        >
           <img src={settingsSvg} alt="" width={24} height={24} />
         </button>
         <button

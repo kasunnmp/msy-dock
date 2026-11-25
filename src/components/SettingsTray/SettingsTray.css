@@ -1,0 +1,221 @@
+/* Full-viewport click-catcher; the visible surface is the masked right-hand panel. */
+.settings {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+}
+
+.settings__bg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 708px;
+  background: rgba(222, 222, 222, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  mask-size: 100% 100%;
+  -webkit-mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  pointer-events: none;
+}
+
+.settings__tray {
+  position: absolute;
+  top: 50px;
+  right: 2px;
+  width: 372px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.settings__title {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  margin: 0;
+  padding: 0 16px;
+  font-family: 'PP Neue Montreal', Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.12px;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.settings__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0 0 0 15px;
+  list-style: none;
+}
+
+/* Figma "Menu-items": 340 × 60, frosted glass, white 60% edge. */
+.settings__item {
+  all: unset;
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 340px;
+  min-height: 60px;
+  padding: 8px 4px 8px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow:
+    0 0 2px rgba(0, 0, 0, 0.1),
+    0 0 25px rgba(0, 0, 0, 0.16),
+    0 1px 0 rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+}
+
+.settings__item-glass {
+  position: absolute;
+  inset: 0;
+  /* Figma uses a colour-dodge layer under a 55% grey wash; blend modes can't reach the
+     wallpaper through the tray's stacking context, so this is the flattened equivalent. */
+  background: linear-gradient(to bottom, rgba(248, 249, 252, 0.8), rgba(240, 241, 247, 0.8));
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px);
+  transition: background 140ms ease;
+}
+
+
+
+.settings__item:hover .settings__item-glass,
+.settings__item:focus-visible .settings__item-glass {
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.92), rgba(250, 250, 252, 0.92));
+}
+
+.settings__item:focus-visible {
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.55);
+}
+
+.settings__item > :not(.settings__item-glass) {
+  position: relative;
+}
+
+.settings__icon {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 2px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 999px;
+  background: #e6e6e6;
+}
+
+.settings__avatar.avatar {
+  flex: none;
+  width: 44px;
+  height: 44px;
+}
+
+.settings__item-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+
+.settings__item-title {
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: #000;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settings__item-sub {
+  padding: 1px 0 2px;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 18px;
+  letter-spacing: 0.21px;
+  color: rgba(0, 0, 0, 0.8);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Figma's chevron slot (25px); the asset itself is transparent in this state. */
+.settings__chevron {
+  flex: none;
+}
+
+/* ---------- Advanced → Lock screen panel ---------- */
+
+.settings__panel-wrap {
+  overflow: hidden;
+}
+
+.settings__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 340px;
+  margin-top: 8px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 14px;
+  background: rgba(250, 250, 250, 0.7);
+  backdrop-filter: blur(20px);
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.settings__panel-title {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.settings__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.settings__row--toggle {
+  cursor: pointer;
+}
+
+.settings__seg {
+  display: flex;
+  padding: 2px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.settings__seg button {
+  all: unset;
+  flex: 1;
+  padding: 5px 0;
+  border-radius: 6px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.settings__seg button[aria-checked='true'] {
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  font-weight: 600;
+}
+
+.settings__seg button:focus-visible {
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.55);
+}

@@ -9,6 +9,7 @@
   justify-content: flex-end;
   padding-bottom: 10px;
   pointer-events: none;
+  z-index: 31; /* above the Settings tray, below session control */
 }
 
 .status-bar__glow {

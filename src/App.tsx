@@ -3,19 +3,13 @@ import { AnimatePresence, MotionConfig, motion } from 'motion/react'
 import { Workspace } from './Workspace'
 import { StatusBar } from './components/StatusBar/StatusBar'
 import { SessionControl } from './components/SessionControl/SessionControl'
+import { SettingsTray } from './components/SettingsTray/SettingsTray'
 import { LockScreen, type Mode } from './components/LockScreen/LockScreen'
 import { MULTI_USERS, SINGLE_USER, type Account } from './lock/accounts'
-import { DEFAULT_IDLE_TIMEOUT_MS, DEFAULT_LOCK_ON_HIDDEN } from './lock/config'
+import { DEFAULT_IDLE_TIMEOUT_MS, DEFAULT_LOCK_ON_HIDDEN, IDLE_OPTIONS } from './lock/config'
 import './App.css'
 
 type Scenario = 'single' | 'multi'
-
-const IDLE_OPTIONS: { label: string; ms: number | null }[] = [
-  { label: '15 s', ms: 15_000 },
-  { label: '1 min', ms: 60_000 },
-  { label: '5 min', ms: DEFAULT_IDLE_TIMEOUT_MS },
-  { label: 'Never', ms: null },
-]
 
 const ease = [0.23, 1, 0.32, 1] as const
 
@@ -25,6 +19,8 @@ export default function App() {
   const [currentId, setCurrentId] = useState('hayden')
   const [locked, setLocked] = useState<false | Mode>(false)
   const [sessionOpen, setSessionOpen] = useState(false)
+  // Workspace state that must survive a lock/unlock cycle lives here, above the lock boundary.
+  const [settingsOpen, setSettingsOpen] = useState(false)
   const [idleMs, setIdleMs] = useState<number | null>(DEFAULT_IDLE_TIMEOUT_MS)
   const [lockOnHidden, setLockOnHidden] = useState(DEFAULT_LOCK_ON_HIDDEN)
 
@@ -93,7 +89,23 @@ export default function App() {
             transition={{ duration: 0.45, ease }}
           >
             <Workspace>
-              <StatusBar onSessionControl={() => setSessionOpen(true)} />
+              <AnimatePresence>
+                {settingsOpen && (
+                  <SettingsTray
+                    account={accounts.find((x) => x.id === effectiveCurrentId) ?? accounts[0]}
+                    idleMs={idleMs}
+                    onIdleMsChange={setIdleMs}
+                    lockOnHidden={lockOnHidden}
+                    onLockOnHiddenChange={setLockOnHidden}
+                    onClose={() => setSettingsOpen(false)}
+                  />
+                )}
+              </AnimatePresence>
+              <StatusBar
+                settingsOpen={settingsOpen}
+                onSettings={() => setSettingsOpen((o) => !o)}
+                onSessionControl={() => setSessionOpen(true)}
+              />
               <AnimatePresence>
                 {sessionOpen && (
                   <SessionControl

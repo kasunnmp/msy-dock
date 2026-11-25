@@ -22,3 +22,11 @@ export const LEGAL_LINKS = {
 export const LEGAL_TEXT = '© 2026 MediTrust. All Rights Reserved.'
 
 export const LANGUAGES = ['English (United States)', 'English (United Kingdom)', 'Deutsch', 'Français']
+
+/** Choices offered in Settings → Advanced → Lock screen. */
+export const IDLE_OPTIONS: { label: string; ms: number | null }[] = [
+  { label: '15 s', ms: 15_000 },
+  { label: '1 min', ms: 60_000 },
+  { label: '5 min', ms: DEFAULT_IDLE_TIMEOUT_MS },
+  { label: 'Never', ms: null },
+]
