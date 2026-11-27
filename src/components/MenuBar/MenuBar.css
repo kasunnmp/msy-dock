@@ -1,0 +1,40 @@
+.menu-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 32px;
+  padding: 0 10px 0 16px;
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(30px);
+  box-shadow: inset 0 -0.5px 0 rgba(255, 255, 255, 0.25);
+  color: #fff;
+  text-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.2);
+  z-index: 50;
+}
+
+.menu-bar__brand {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.1px;
+}
+
+.menu-bar__right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.menu-bar__clock {
+  font-size: 13px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.menu-bar .account-menu {
+  text-shadow: none;
+}

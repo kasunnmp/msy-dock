@@ -7,14 +7,17 @@ import messagesPng from './assets/dock/messages.png'
 import filesSvg from './assets/dock/files.svg'
 import trashPng from './assets/dock/trash.png'
 import separatorSvg from './assets/dock/separator.svg'
-import person1Png from './assets/dock/person-1.png'
-import person2Png from './assets/dock/person-2.png'
 import folderIcon1a from './assets/dock/folder-793e1.png'
 import folderIcon1b from './assets/dock/folder-35536.png'
 import folderIcon2 from './assets/dock/folder-f6c66.png'
 import folderIcon3a from './assets/dock/folder-d01da.png'
 import folderIcon3b from './assets/dock/folder-2b9e4.png'
 import folderIcon4 from './assets/dock/folder-fd006.png'
+import { AccountProvider } from './accounts/AccountContext'
+import { useAccounts } from './accounts/useAccounts'
+import { AccountAvatar } from './components/AccountSwitcher/AccountAvatar'
+import { SwitchingOverlay } from './components/AccountSwitcher/SwitchingOverlay'
+import { MenuBar } from './components/MenuBar/MenuBar'
 import './App.css'
 
 function AppTile({ src }: { src: string }) {
@@ -37,7 +40,20 @@ function MiniIcon({ srcs }: { srcs: string[] }) {
 
 export default function App() {
   return (
+    <AccountProvider>
+      <Desktop />
+    </AccountProvider>
+  )
+}
+
+function Desktop() {
+  const { accounts, active } = useAccounts()
+  // Colleagues on the dock are every other account; unread counts follow whoever is signed in.
+  const colleagues = accounts.filter((a) => a.id !== active.id)
+
+  return (
     <main className="desktop">
+      <MenuBar />
       <div className="desktop__dock">
         <Dock>
           <AskMaisey />
@@ -56,7 +72,7 @@ export default function App() {
 
           <DockItem label="Messages" width={54} height={54}>
             <AppTile src={messagesPng} />
-            <DockBadge count={5} />
+            {active.unread.messages > 0 && <DockBadge count={active.unread.messages} />}
           </DockItem>
 
           <DockItem label="Files" width={54} height={52}>
@@ -83,20 +99,26 @@ export default function App() {
             <img src={trashPng} alt="" width={55} height={62} />
           </DockItem>
 
-          <DockItem label="Dr. Sam Patel" width={44} height={44}>
-            <span className="person">
-              <img src={person1Png} alt="" />
-              <DockBadge count={5} />
-            </span>
-          </DockItem>
-
-          <DockItem label="Nurse Ava Reid" width={44} height={44} style={{ marginLeft: -2 }}>
-            <span className="person">
-              <img src={person2Png} alt="" />
-            </span>
-          </DockItem>
+          {colleagues.map((person, i) => {
+            const unread = active.unread.people[person.id] ?? 0
+            return (
+              <DockItem
+                key={person.id}
+                label={person.name}
+                width={44}
+                height={44}
+                style={i > 0 ? { marginLeft: -2 } : undefined}
+              >
+                <span className="person">
+                  <AccountAvatar account={person} size={44} />
+                  {unread > 0 && <DockBadge count={unread} />}
+                </span>
+              </DockItem>
+            )
+          })}
         </Dock>
       </div>
+      <SwitchingOverlay />
     </main>
   )
 }
